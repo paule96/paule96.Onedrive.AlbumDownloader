@@ -5,21 +5,23 @@ using paule96.Onedrive.AlbumDownloader.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace paule96.Onedrive.AlbumDownloader
 {
-    public class GraphSessionService
+    public class GraphSessionService : IGraphSessionService
     {
         public const string baseUrl = "https://graph.microsoft.com/v1.0";
         public const string defaultOdataJsonValueToken = "value";
         public const string defaultOdataSkipLink = "@odata.nextLink";
         private readonly string currentProfil = $"{baseUrl}/me";
 
-        public GraphSessionService(string clientId)
+        public GraphSessionService(string clientId, HttpClient httpClient)
         {
             App = new PublicClientApplication(clientId);
+            this.httpClient = httpClient;
         }
         private static readonly string[] scopes = new string[] {
             "user.read",
@@ -32,8 +34,10 @@ namespace paule96.Onedrive.AlbumDownloader
             "Files.ReadWrite.Selected",
             "User.Read"
         };
+        private readonly HttpClient httpClient;
+
         public IPublicClientApplication App { get; private set; }
-        public User CurrentUser { get; set; }
+        public User CurrentUser { get; private set; }
         private AuthenticationResult authResult;
         public AuthenticationResult AuthResult
         {
@@ -59,6 +63,7 @@ namespace paule96.Onedrive.AlbumDownloader
         public async Task<AuthenticationResult> Login()
         {
             var result = await CreateAuthResult(App);
+            AuthResult = result;
             CurrentUser = await GetCurrentUser();
             return result;
 
@@ -69,9 +74,14 @@ namespace paule96.Onedrive.AlbumDownloader
             return JsonConvert.DeserializeObject<User>(await GetHttpContentWithToken(currentProfil, authResult));
         }
 
-        public async Task<IEnumerable<T>> GetListContent<T>(string url) where T : class
+        public Task<IEnumerable<T>> GetListContent<T>(string url) where T : class
         {
-            var result = JObject.Parse(await GetHttpContentWithToken(url, AuthResult));
+            return GetListContent<T>(url, AuthResult);
+        }
+
+        public async Task<IEnumerable<T>> GetListContent<T>(string url, AuthenticationResult authResult) where T : class
+        {
+            var result = JObject.Parse(await GetHttpContentWithToken(url, authResult));
             if (result.ContainsKey(defaultOdataJsonValueToken) == false)
             {
                 throw new Exception("This request doesn't return a list.");
@@ -81,18 +91,20 @@ namespace paule96.Onedrive.AlbumDownloader
                 .Select(d => d.ToObject<T>());
             if (result.ContainsKey("@odata.nextLink"))
             {
-                typedResultList = typedResultList.Concat(await GetListContent<T>(result["@odata.nextLink"].Value<string>()));
+                typedResultList = typedResultList.Concat(await GetListContent<T>(result["@odata.nextLink"].Value<string>(), authResult));
             }
             return typedResultList;
         }
-
-        public async Task<T> GetSingleContent<T>(string url) where T : class
+        public Task<T> GetSingleContent<T>(string url) where T : class
         {
-            return JsonConvert.DeserializeObject<T>(await GetHttpContentWithToken(url, AuthResult));
+            return GetSingleContent<T>(url, AuthResult);
         }
-        public static async Task<string> GetHttpContentWithToken(string url, AuthenticationResult authResult)
+        public async Task<T> GetSingleContent<T>(string url, AuthenticationResult authResult) where T : class
         {
-            var httpClient = new System.Net.Http.HttpClient();
+            return JsonConvert.DeserializeObject<T>(await GetHttpContentWithToken(url, authResult));
+        }
+        public async Task<string> GetHttpContentWithToken(string url, AuthenticationResult authResult)
+        {
             var request = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, url);
             //Add the token in Authorization header
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authResult.AccessToken);

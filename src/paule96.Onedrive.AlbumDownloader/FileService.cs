@@ -9,12 +9,12 @@ namespace paule96.Onedrive.AlbumDownloader
 {
     public class FileService
     {
-        public FileService(GraphSessionService graphSession)
+        public FileService(IGraphSessionService graphSession)
         {
             GraphSession = graphSession;
         }
 
-        public GraphSessionService GraphSession { get; }
+        public IGraphSessionService GraphSession { get; }
 
         public async Task<File> GetFileMetadata(string driveId, string fileId)
         {
