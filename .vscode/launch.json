@@ -1,0 +1,28 @@
+{
+   // Use IntelliSense to find out which attributes exist for C# debugging
+   // Use hover for the description of the existing attributes
+   // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+   "version": "0.2.0",
+   "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build test (include the source)",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "dotnet",
+            "args": ["test", "${workspaceFolder}/test/paule96.Onedrive.AlbumDownloader.Tests/paule96.Onedrive.AlbumDownloader.Tests.csproj"],
+            "cwd": "${workspaceFolder}/test/paule96.Onedrive.AlbumDownloader.Tests",
+            // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ,]
+}

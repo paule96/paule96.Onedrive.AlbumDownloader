@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build test (include the source)",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/test/paule96.Onedrive.AlbumDownloader.Tests/paule96.Onedrive.AlbumDownloader.Tests.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build source only",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/paule96.Onedrive.AlbumDownloader/paule96.Onedrive.AlbumDownloader.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
