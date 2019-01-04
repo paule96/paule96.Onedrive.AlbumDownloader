@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8C25F5EC-A53E-4B43-84E3-2E2D3C70B160}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "paule96.Onedrive.AlbumDownloader.Tests", "test\paule96.Onedrive.AlbumDownloader.Tests\paule96.Onedrive.AlbumDownloader.Tests.csproj", "{12800144-3D03-4121-90EC-5B773ADF1D78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,12 +28,17 @@ Global
 		{CDF34E25-B75B-4F49-977E-65123FD839D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDF34E25-B75B-4F49-977E-65123FD839D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDF34E25-B75B-4F49-977E-65123FD839D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12800144-3D03-4121-90EC-5B773ADF1D78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12800144-3D03-4121-90EC-5B773ADF1D78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12800144-3D03-4121-90EC-5B773ADF1D78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12800144-3D03-4121-90EC-5B773ADF1D78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CDF34E25-B75B-4F49-977E-65123FD839D2} = {2C2235B5-3EE3-4DE9-89B7-1E4881B8A959}
+		{12800144-3D03-4121-90EC-5B773ADF1D78} = {8C25F5EC-A53E-4B43-84E3-2E2D3C70B160}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2510D469-DB6E-4823-82D6-2BA033C2869E}
