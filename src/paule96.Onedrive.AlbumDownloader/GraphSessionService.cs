@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace paule96.Onedrive.AlbumDownloader
@@ -121,19 +123,31 @@ namespace paule96.Onedrive.AlbumDownloader
         private static async Task<AuthenticationResult> CreateAuthResult(IPublicClientApplication app)
         {
             AuthenticationResult authResult = null;
-            // This opens a browser window and ask for a microsoft account the frist time
+            // This opens a browser window and ask for a microsoft account the frist time            
             var accounts = await app.GetAccountsAsync();
             try
-            {
+            {                
                 authResult = await app.AcquireTokenSilentAsync(scopes, accounts.FirstOrDefault());
-            }
+            }           
             catch (MsalUiRequiredException ex)
-            {
-                // A MsalUiRequiredException happened on AcquireTokenSilentAsync. This indicates you need to call AcquireTokenAsync to acquire a token
+            {                
                 System.Diagnostics.Debug.WriteLine($"MsalUiRequiredException: {ex.Message}");
                 try
                 {
-                    authResult = await app.AcquireTokenAsync(scopes);
+
+                    throw new NotSupportedException("Plase wait microsoft solved the issue https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/728");
+                    // Todo: implement device code flow instead of username and passwort if this isse is solved: https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/728
+                    // we now must use device authentification!
+                    authResult = await app.AcquireTokenWithDeviceCodeAsync(scopes, (result) =>
+                    {
+                        Console.WriteLine("Login success with message: " + result.Message);
+                        return Task.FromResult(0);
+                    }, CancellationToken.None);
+                    //Console.WriteLine("Input your OneDrive username");
+                    //var user = Console.ReadLine();
+                    //Console.WriteLine("Input your OneDrive passwort");
+                    //var password = GetPassword();
+                    //authResult = await app.AcquireTokenByUsernamePasswordAsync(scopes, user, password);
                 }
                 catch (MsalException msalex)
                 {
@@ -149,6 +163,33 @@ namespace paule96.Onedrive.AlbumDownloader
                 return authResult;
             }
             throw new Exception("Error while creating a token.");
+        }
+
+        private static SecureString GetPassword()
+        {
+            var pwd = new SecureString();
+            while (true)
+            {
+                ConsoleKeyInfo i = Console.ReadKey(true);
+                if (i.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+                else if (i.Key == ConsoleKey.Backspace)
+                {
+                    if (pwd.Length > 0)
+                    {
+                        pwd.RemoveAt(pwd.Length - 1);
+                        Console.Write("\b \b");
+                    }
+                }
+                else if (i.KeyChar != '\u0000') // KeyChar == '\u0000' if the key pressed does not correspond to a printable character, e.g. F1, Pause-Break, etc
+                {
+                    pwd.AppendChar(i.KeyChar);
+                    Console.Write("*");
+                }
+            }
+            return pwd;
         }
     }
 }
